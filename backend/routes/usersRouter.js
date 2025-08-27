@@ -1,8 +1,17 @@
-const express=require('express');
-const router=express.Router();
+const express = require("express");
+const router = express.Router();
 
-router.get('/',(req,res)=>{
-    res.send('hey its working');
-})
+const productsRouters=require('./productsRouter')
+const cartRouters=require('./cartRouter')
+const orderRouters=require('./orderRouter')
 
-module.exports=router;
+
+
+router.use('/products',productsRouters)
+
+router.use('/cart',cartRouters)
+
+router.use('/orders',orderRouters)
+
+
+module.exports = router;

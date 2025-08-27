@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    This is image uploading page
+
+    <form action="/admin/product/create" method="post" enctype="multipart/form-data">
+    <label for="image">Upload Product Image:</label>
+    <input type="file" name="image" id="image" required>
+    <br><br>
+
+    <label for="name">Product Name:</label>
+    <input type="text" name="name" id="name" placeholder="Enter product name" required>
+    <br><br>
+
+    <label for="price">Price:</label>
+    <input type="number" name="price" id="price" placeholder="Enter price" required>
+    <br><br>
+
+    <label for="discount">Discount (%):</label>
+    <input type="number" name="discount" id="discount" placeholder="Enter discount" value="0">
+    <br><br>
+
+    <label for="bgColor">Background Color:</label>
+    <input type="color" name="bgColor" id="bgColor" value="#ffffff">
+    <br><br>
+
+    <label for="panelColor">Panel Color:</label>
+    <input type="color" name="panelColor" id="panelColor" value="#000000">
+    <br><br>
+
+    <label for="textColor">Text Color:</label>
+    <input type="color" name="textColor" id="textColor" value="#333333">
+    <br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+
+</body>
+
+</html>

@@ -2,7 +2,7 @@ const constant=require('../utils/constants')
 const mongoose=require('mongoose');
 
 
-const ownerSchema=mongoose.Schema({
+const adminschema=mongoose.Schema({
     fullname: String,
     email: String,
     password:String,
@@ -15,4 +15,4 @@ const ownerSchema=mongoose.Schema({
     gstin:String,
 });
 
-module.exports=mongoose.model('owner',ownerSchema);
+module.exports=mongoose.model('admin',adminschema,'admin');
