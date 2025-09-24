@@ -1,28 +1,29 @@
-const joi=require('joi');
+const joi = require("joi");
 
-const productValidation={
-    createProduct : joi.object({
+const productValidation = {
+  createProduct: joi.object({
+    name: joi.string()
+      .trim()
+      .min(2)
+      .max(100)
+      .required()
+      .messages({
+        "string.empty": "Product name is required",
+        "string.min": "Product name must be at least 2 characters"
+      }),
 
-        
-        name:joi.string()
-        .trim()
-        .min(2)
-        .max(100)
-        .required()
-        .messages({
-            "string.empty":"Product name is required",
-            "string.min":"Product name must be at least 2 characters"
-        })        ,
-        price: joi.number()
-        .required()
-        .min(1)
-        .messages({
-           'number.min':"Price is required "
-        }),
-        discount: joi.number()
-        .default(0)
-        .min(0),
-         bgColor: joi.string()
+    price: joi.number()
+      .required()
+      .min(1)
+      .messages({
+        "number.min": "Price must be at least 1"
+      }),
+
+    discount: joi.number()
+      .default(0)
+      .min(0),
+
+    bgColor: joi.string()
       .pattern(/^#([0-9A-Fa-f]{6})$/)
       .default("#FFFFFF")
       .messages({
@@ -43,9 +44,22 @@ const productValidation={
         "string.pattern.base": "textColor must be a valid hex color (e.g. #000000)",
       }),
 
-    })
-    
+    // ✅ Add booleans (coming as strings "true"/"false")
+    isNew: joi.boolean()
+      .truthy("true")
+      .falsy("false")
+      .default(false),
 
-}
+    isSale: joi.boolean()
+      .truthy("true")
+      .falsy("false")
+      .default(false),
 
-module.exports=productValidation;
+    isCollection: joi.boolean()
+      .truthy("true")
+      .falsy("false")
+      .default(false),
+  })
+};
+
+module.exports = productValidation;

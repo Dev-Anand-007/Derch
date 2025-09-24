@@ -1,5 +1,6 @@
 const express=require('express');
 const app=express();
+const cors=require('cors')
 
 // const cookieParser=require('cookie-parser');
 const path=require('path');
@@ -21,10 +22,20 @@ app.use(express.json())
 
 app.use(express.static(path.join(__dirname+'public')));
 app.set('view engine','ejs')
+app.use(cors(
+   { origin: "http://localhost:5173",
+    credentials:true,
+    method:['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders:['Content-Type','Authorization'],
 
-app.use('/auth',authRouter)
-app.use('/admin',adminRouter);
-app.use('/',usersRouter);
+}
+
+))
+
+
+app.use('/api/auth',authRouter)
+app.use('/api/admin',adminRouter);
+app.use('/api/',usersRouter);
 
 
 

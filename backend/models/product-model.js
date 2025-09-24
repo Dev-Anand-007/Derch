@@ -20,6 +20,23 @@ const productSchema = mongoose.Schema({
     default: 0,
     min:0,
   },
+  status: {
+  type: Boolean,
+  default: true, // true = available, false = sold
+},
+// 🔹 Flags
+  isNewProduct: {
+    type: Boolean,
+    default: false,
+  },
+  isSale: {
+    type: Boolean,
+    default: false,
+  },
+  isCollection: {
+    type: Boolean,
+    default: false,
+  },
 bgColor: {
     type: String,
     default: "#FFFFFF", // white

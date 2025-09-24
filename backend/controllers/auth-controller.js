@@ -1,7 +1,7 @@
 const userModel = require("../models/user-model");
 const bcrypt = require("bcrypt");
 const logger = require("../utils/logger");
-
+const jwt = require("jsonwebtoken");
 
 const { generateToken } = require("../utils/generateToken");
 
@@ -58,6 +58,7 @@ const authController = {
   async login(req, res) {
     try {
       let { email, password } = req.body;
+      
 
       let user = await userModel.findOne({ email });
 
@@ -70,7 +71,7 @@ const authController = {
 
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
-        res.status(401).json({
+        return res.status(401).json({
           success: false,
           message: "Invalid email or password",
         });
@@ -81,17 +82,19 @@ const authController = {
       const userResponse = user.toObject();
       delete userResponse.password;
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "Login successful",
         data: {
           user: userResponse,
           token,
         },
+        
       });
+
     } catch (error) {
       console.error("Login error:", error);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: "Internal server error during login",
         error: error.message,
@@ -99,12 +102,49 @@ const authController = {
     }
   },
 
-  logout(req,res){
+  async checkAuth(req, res) {
+    try {
+      const authHeader = req.headers["authorization"];
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res
+          .status(401)
+          .json({ success: false, message: "No token provided" });
+      }
+
+      const token = authHeader.split(" ")[1];
+
+      const decoded = jwt.verify(token, process.env.JWT_KEY);
+
+      const user = await userModel
+        .findOne({ email: decoded.email })
+        .select("-password");
+
+      if (!user) {
+        return res
+          .status(401)
+          .json({ success: false, message: "User not found" });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Authenticated",
+        user,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token",
+      });
+    }
+  },
+
+  logout(req, res) {
     return res.status(200).json({
-    success: true,
-    message: "Logged out successfully"
-  });
-  }
+      success: true,
+      message: "Logged out successfully",
+    });
+  },
 };
 
 module.exports = authController;

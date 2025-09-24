@@ -1,131 +1,130 @@
-const userModel=require('../models/user-model')
-const productModel=require('../models/product-model')
+const userModel = require("../models/user-model");
+const productModel = require("../models/product-model");
 
-const orderController={
-    async fetchAllOrder(req,res){
-        try {
-            // Fetch all users with orders field populated with product details
-            const usersWithOrders = await userModel.find({ 
-                orders: { $exists: true, $ne: [] } // Only users who have orders
-            })
-            .populate({
-                path: 'orders',
-                populate: {
-                    path: 'product', // Assuming orders array contains objects with product field
-                    model: 'Product', // Replace with your actual product model name
-                    select: 'name price image description' // Select fields you need
-                }
-            })
-            .select('name email orders createdAt') // Select user fields you need
-            .sort({ createdAt: -1 }); // Sort users by latest created
+const orderController = {
+  async fetchAllOrder(req, res)  {
+  try {
+    // Fetch users who have orders
+    const usersWithOrders = await userModel
+      .find({
+        orders: { $exists: true, $ne: [] }, // Users with non-empty orders
+      })
+      .select("fullname email orders createdAt") // User fields
+      .sort({ createdAt: -1 });
 
-            // Alternative: If you want to sort by latest order date instead
-            // .sort({ 'orders.createdAt': -1 });
+    if (!usersWithOrders || usersWithOrders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found",
+      });
+    }
 
-            if (!usersWithOrders || usersWithOrders.length === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: "No orders found"
-                });
-            }
+    // Map over users and fetch product details for their orders
+    const usersWithOrderDetails = await Promise.all(
+      usersWithOrders.map(async (user) => {
+        const products = await productModel.find({
+          _id: { $in: user.orders },
+        }).select("-image"); // return all fields except image buffer
 
-            return res.status(200).json({
-                success: true,
-                message: "Orders fetched successfully",
-                count: usersWithOrders.length,
-                users: usersWithOrders
-            });
+        return {
+          _id: user._id,
+          name: user.fullname,
+          email: user.email,
+          createdAt: user.createdAt,
+          orders: products,
+        };
+      })
+    );
 
-        } catch (error) {
-            console.error("Fetch orders error:", error);
-            
-            return res.status(500).json({
-                success: false,
-                message: "Failed to fetch orders",
-                error: error.message
-            });
-        }
+    return res.status(200).json({
+      success: true,
+      message: "Orders fetched successfully",
+      count: usersWithOrderDetails.length,
+      users: usersWithOrderDetails,
+    });
+  } catch (error) {
+    console.error("Fetch orders error:", error);
 
-    },
-
-    async fetchUserOrder(req,res){
-        try {
-            let user=await userModel.findOne({email:req.user.email}).populate('orders','-image');
-            
-
-            if (!user ) {
-                return res.status(404).json({
-                    success: false,
-                    message: "No User Found"
-                });
-            }
-            let orders=user.orders || [];
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders",
+      error: error.message,
+    });
+  }
+},
 
 
-            return res.status(200).json({
-                success: true,
-                message: "Orders fetched successfully",
-                count: orders.length,
-               orders:orders
-            });
+  async fetchUserOrder(req, res) {
+    try {
+      console.log(req.user);
+      let user = await userModel
+        .findOne({ email: req.user.email })
+        .populate("orders", "-image");
 
-        } catch (error) {
-            console.error("Fetch orders error:", error);
-            
-            return res.status(500).json({
-                success: false,
-                message: "Failed to fetch orders",
-                error: error.message
-            });
-        }
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "No User Found",
+        });
+      }
+      let orders = user.orders || [];
 
-    },
+      return res.status(200).json({
+        success: true,
+        message: "Orders fetched successfully",
+        count: orders.length,
+        orders: orders,
+      });
+    } catch (error) {
+      console.error("Fetch orders error:", error);
 
-    async addOrder(req,res){
-        try {
-            // Fetch all users with orders field populated with product details
-            const usersWithOrders = await userModel.find({ 
-                orders: { $exists: true, $ne: [] } // Only users who have orders
-            })
-            .populate({
-                path: 'orders',
-                populate: {
-                    path: 'product', // Assuming orders array contains objects with product field
-                    model: 'Product', // Replace with your actual product model name
-                    select: 'name price image description' // Select fields you need
-                }
-            })
-            .select('name email orders createdAt') // Select user fields you need
-            .sort({ createdAt: -1 }); // Sort users by latest created
+      return res.status(500).json({
+        success: false,
+        message: "Failed to fetch orders",
+        error: error.message,
+      });
+    }
+  },
 
-            // Alternative: If you want to sort by latest order date instead
-            // .sort({ 'orders.createdAt': -1 });
+  async addOrder(req, res) {
+    try {
+      const user = await userModel.findOne({ email: req.user.email });
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "User not found",
+        });
+      }
 
-            if (!usersWithOrders || usersWithOrders.length === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: "No orders found"
-                });
-            }
+      if (!user.cart || user.cart.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Cart is empty",
+        });
+      }
 
-            return res.status(200).json({
-                success: true,
-                message: "Orders fetched successfully",
-                count: usersWithOrders.length,
-                users: usersWithOrders
-            });
+      // Update each product's status = false before moving to orders
+    for (let productId of user.cart) {
+      await productModel.findByIdAndUpdate(productId, { status: false });
+    }
 
-        } catch (error) {
-            console.error("Fetch orders error:", error);
-            
-            return res.status(500).json({
-                success: false,
-                message: "Failed to fetch orders",
-                error: error.message
-            });
-        }
+      user.orders.push(...user.cart);
 
-    },
-}
+      user.cart = [];
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Order Placed Successfully",
+        orders: user.orders,
+      });
+    } catch (error) {
+      console.error("Error placing order:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    }
+  },
+};
 
-module.exports=orderController;
+module.exports = orderController;

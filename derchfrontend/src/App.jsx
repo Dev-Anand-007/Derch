@@ -1,13 +1,15 @@
-import { useState } from 'react'
 import './App.css'
-import Auth from './pages/Auth.jsx'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+
+import  AppRoutes  from './Routes/AppRoutes.jsx'
+
 
 function App() {
 
 
   return (
     <>
-      <Auth/>
+      <AppRoutes/>
     </>
   )
 }

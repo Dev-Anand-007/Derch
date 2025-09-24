@@ -9,6 +9,9 @@ router.post("/register", authController.register);
 //User Login
 router.post('/login',authController.login)
 
+//Check Auth User
+router.get('/check-auth',authController.checkAuth)
+
 //User Logout --> Not required, Since token will be handled by frontend
 router.get('/logout',authController.logout)
 

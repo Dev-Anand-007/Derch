@@ -18,7 +18,7 @@ router.get("/new",isLoggedin,productCotroller.newProduct);
 router.get("/sort",isLoggedin,productCotroller.priceSort);
 
 
-router.get("/image/:id",isLoggedin, productCotroller.fetchImage);
+router.get("/image/:id", productCotroller.fetchImage);
 
 
 //For Admin

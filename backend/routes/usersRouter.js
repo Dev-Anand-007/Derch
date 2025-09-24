@@ -3,13 +3,16 @@ const router = express.Router();
 
 const productsRouters=require('./productsRouter')
 const cartRouters=require('./cartRouter')
-const orderRouters=require('./orderRouter')
+const wishlistRouters=require('./wishlistRouter')
 
+const orderRouters=require('./orderRouter')
 
 
 router.use('/products',productsRouters)
 
 router.use('/cart',cartRouters)
+
+router.use('/wishlist',wishlistRouters)
 
 router.use('/orders',orderRouters)
 

@@ -26,10 +26,15 @@ const userSchema=mongoose.Schema({
         ref: "product",
         
     }],
-    orders: {
+    wishlist:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'product'
+
+    }],
+    orders:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "product",
-    },
+    }],
     contact: {
         type:Number,
         
