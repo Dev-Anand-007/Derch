@@ -6,54 +6,56 @@ const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils/generateToken");
 
 const authController = {
-  async register(req, res) {
-    try {
-      const { fullname, email, password, contact, picture } = req.body;
+async register(req, res) {
+  try {
+    const { fullname, email, password, phone, contact, address } = req.body;
 
-      const existingUser = await userModel.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid Email or Password",
-        });
-      }
-
-      //Hash password
-      const saltRounds = 12;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-      let newUser = await userModel.create({
-        email,
-        fullname,
-        password: hashedPassword,
-        contact,
-        picture,
-      });
-
-      let token = generateToken(newUser);
-
-      // puttingInCookies
-      // res.cookies('token',token);
-
-      //Remove password form resposne
-      const userResponse = newUser.toObject();
-      delete userResponse.password;
-
-      res.status(200).json({
-        success: true,
-        message: "User registered Successfully",
-        data: userResponse,
-        accessToken: token,
-      });
-    } catch (error) {
-      logger.routes("Registration error:", error);
-      res.status(500).json({
+    // Check if user already exists
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
         success: false,
-        message: "Internal server error during application",
-        error: error.message,
+        message: "Email already registered",
       });
     }
-  },
+
+    // Hash password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create new user
+    let newUser = await userModel.create({
+      fullname,
+      email,
+      phone,
+      contact,
+      address,
+      password: hashedPassword,
+    });
+
+    // Generate token
+    const token = generateToken(newUser);
+
+    // Remove password from response
+    const userResponse = newUser.toObject();
+    delete userResponse.password;
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      data: userResponse,
+      accessToken: token,
+    });
+  } catch (error) {
+    logger.routes("Registration error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during registration",
+      error: error.message,
+    });
+  }
+},
+
 
   async login(req, res) {
     try {

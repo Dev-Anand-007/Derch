@@ -7,20 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearAuthErrors, logoutAsync, resetAuthStatus, selectAuthErrors, selectAuthStatus } from '../../auth/AuthSlice';
 import { themes } from '../../../constants/colors';
 
-
-
-
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  // const [activeMenu, setActiveMenu] = useState('Home');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  
   const [cartCount] = useState(3); // Example cart count
   const [wishlistCount] = useState(5); // Example wishlist count
   const mode = themes.lightMode;
-
 
   const location = useLocation();
   const getActiveMenu = () => {
@@ -55,32 +48,20 @@ const Navbar = () => {
       toast.error(error.message)
     }
   }, [error]);
-  // useEffect(() => {
-  //   if (status === 'fulfilled') {
-  //     toast.success("Logged Out successfully.")
-  //     navigate('/auth')
-  //     reset()
-  //   }
-  //   return () => {
-  //     dispatch(resetAuthStatus())
-  //     dispatch(clearAuthErrors())
-  //   }
 
-  // })
   const handleLogout = async (e) => {
-    setIsDropdownOpen(false);
     try {
       localStorage.removeItem('adminToken');
       localStorage.removeItem('admin')
       toast.success("Logging out in 3 seconds.");
       setTimeout(() => {
-      navigate("/adminlogin");
-    }, 3000);
+        navigate("/adminlogin");
+      }, 3000);
     } catch (error) {
       toast.error("Logout failed");
     }
-
   }
+
   // Navigation items
   const navItems = ['Dashboard', 'Orders', 'Users', 'Products'];
 
@@ -227,13 +208,11 @@ const Navbar = () => {
                     color: activeMenu === item ? 'white' : mode.homedark
                   }}
                   onClick={() => {
-
                     const pathMap = {
                       Dashboard: "/admin",
                       Orders: "/admin/orders",
                       Users: '/admin/users',
                       Products: '/admin/products',
-                      // Search: "/search",
                     };
                     navigate(pathMap[item]);
                   }}
@@ -269,14 +248,7 @@ const Navbar = () => {
                 boxShadow: "0 10px 30px rgba(154, 52, 18, 0.3)"
               }}
               whileTap={() => {
-                const pathMap = {
-                  Dashboard: "/admin",
-                  Orders: "/admin/orders",
-                  Users: '/admin/users',
-                  // Search: "/search",
-                };
-                navigate(pathMap[item]);
-
+                navigate("/admin");
               }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
             >
@@ -292,19 +264,17 @@ const Navbar = () => {
             variants={itemVariants}
             className="flex items-center space-x-2 lg:space-x-4"
           >
-         
-
-            {/* Uplaoad */}
+            {/* Upload */}
             <motion.div
               variants={iconButtonVariants}
               whileHover="hover"
               whileTap="tap"
               className="relative"
-              onTap={() => { navigate('/admin/upload') }}
             >
               <motion.button
                 className="flex items-center space-x-3 px-4 py-3 rounded-full transition-all duration-300 relative"
                 style={{ backgroundColor: mode.buttonBg }}
+                onClick={() => navigate('/admin/upload')}
                 whileHover={{
                   backgroundColor: "#7C2D12",
                   boxShadow: "0 8px 25px rgba(154, 52, 18, 0.4)"
@@ -313,80 +283,26 @@ const Navbar = () => {
                 <span className="hidden sm:block text-white font-medium">Upload</span>
                 <div className="relative">
                   <Plus size={20} className="text-white" />
-
                 </div>
               </motion.button>
             </motion.div>
 
-            {/* Profile */}
-            <div className="relative">
-              <motion.button
-                variants={iconButtonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                className="p-3 rounded-full transition-all duration-300"
-                style={{ backgroundColor: mode.homedark }}
-                onMouseEnter={() => setIsDropdownOpen(true)}
-                onMouseLeave={() => setIsDropdownOpen(false)}
-              >
-                <User size={20} style={{ color: mode.homelight }} />
-              </motion.button>
-
-              {/* Dropdown Menu */}
-              <AnimatePresence>
-                {isDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg z-50"
-                    style={{ backgroundColor: mode.homelight }}
-                    onMouseEnter={() => setIsDropdownOpen(true)}
-                    onMouseLeave={() => setIsDropdownOpen(false)}
-                  >
-                    {/* Profile Option */}
-                    <motion.button
-                      whileHover={{ backgroundColor: mode.buttonHover }}
-                      className="w-full px-4 py-3 text-left rounded-t-lg transition-colors duration-200"
-                      style={{ color: mode.homedark }}
-                      onClick={() => {
-
-
-                        navigate('/admin/profile')
-
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <User size={16} style={{ color: mode.homedark }} />
-                        <span>Profile</span>
-                      </div>
-                    </motion.button>
-
-                    
-
-                    {/* Divider */}
-                    <hr className="my-1" style={{ borderColor: mode.buttonHover }} />
-
-                    {/* Logout Option */}
-                    <motion.button
-                      whileHover={{ backgroundColor: mode.buttonHover }}
-                      className="w-full px-4 py-3 text-left rounded-b-lg transition-colors duration-200"
-                      style={{ color: mode.homedark }}
-                      onClick={() => {
-                        // Handle logout click
-                        handleLogout();
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <LogOut size={16} style={{ color: mode.homedark }} />
-                        <span>Logout</span>
-                      </div>
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            {/* Logout Button - Replaced Profile */}
+            <motion.button
+              variants={iconButtonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              className="p-3 rounded-full transition-all duration-300 group"
+              style={{ backgroundColor: mode.homedark }}
+              onClick={handleLogout}
+              title="Logout"
+            >
+              <LogOut 
+                size={20} 
+                style={{ color: mode.homelight }}
+                className="group-hover:rotate-12 transition-transform duration-200"
+              />
+            </motion.button>
 
             {/* Mobile Menu Toggle */}
             <motion.button
@@ -395,8 +311,7 @@ const Navbar = () => {
               whileTap='tap'
               className="lg:hidden p-2 rounded-full transition-all duration-300"
               style={{ backgroundColor: mode.buttonHover }}
-              onClick={() => setIsMenuOpen(!isMenuOpen)
-              }
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <AnimatePresence mode="wait">
                 {isMenuOpen ? (
@@ -457,7 +372,6 @@ const Navbar = () => {
                           Orders: "/admin/orders",
                           Users: '/admin/users',
                           Products: '/admin/products',
-                          // Search: "/search",
                         };
                         navigate(pathMap[item]);
                         setIsMenuOpen(false);
@@ -473,7 +387,26 @@ const Navbar = () => {
                   ))}
                 </div>
 
-                
+                {/* Mobile Logout Button */}
+                <div className="pt-4 border-t border-gray-200">
+                  <motion.button
+                    variants={itemVariants}
+                    className="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl text-lg font-medium transition-all duration-300"
+                    style={{ backgroundColor: mode.buttonBg, color: 'white' }}
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    whileHover={{
+                      backgroundColor: "#7C2D12",
+                      scale: 1.02
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <LogOut size={20} className="text-white" />
+                    <span>Logout</span>
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           )}
