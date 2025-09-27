@@ -1,99 +1,115 @@
-# Derch E-Commerce Backend
+🚀 Derch – E-Commerce Backend
 
-**Author:** Derch  
-**Tech Stack:** Node.js, Express.js, MongoDB, Mongoose, Multer, Joi, JWT  
+A complete, production-ready backend for an e-commerce platform built using Node.js, Express, and MongoDB. Supports user and admin APIs, secure authentication, product management, cart & wishlist, and order processing.
 
-A **production-ready e-commerce backend** with modular architecture, secure authentication, and complete admin & user features.
+🛠 Tech Stack & Tools
 
----
+✅ Node.js & Express.js – Server and routing
+✅ MongoDB & Mongoose – Database and ORM
+✅ Multer – Image/file upload
+✅ Joi – Data validation
+✅ JWT Authentication – Secure login and access
+✅ Role-based API – Separate Admin & User routes
+✅ Logging – Clean, production-ready logs for easier debugging
+✅ Postman – API testing and documentation
 
-## Features
-- User APIs: Registration, login, logout, authentication check
-- Admin APIs: Admin creation, login, fetch users, token verification
-- Product Management: Create, edit, delete, fetch products (Admin & User)
-- Cart & Wishlist: Add, remove, fetch items
-- Order Management: Add, fetch orders (User & Admin)
-- JWT-based authentication
-- Joi validation for secure data
-- Multer for product image upload
-- Logging for clean production API calls
+⚡ Key Features
 
----
+✅ Admin APIs: Create, edit, delete products; manage users; fetch all orders
+✅ User APIs: Register, login, fetch products; manage cart and wishlist; place orders
+✅ Product Management: Upload images, fetch new/discounted products, sort by price
+✅ Secure Authentication: JWT-based with role checks for Admin & Users
+✅ Validation: API data validated with Joi
+✅ Error Handling: Consistent error messages and status codes
+✅ Logging: Structured logs for production-ready monitoring
 
-## Installation
+🌐 API Endpoints
+🟢 Admin APIs
 
-```bash
-git clone <repository_url>
-cd <project_folder>
+Admin Dashboard & Auth
+
+GET    /admin/                 → Admin home
+POST   /admin/create            → Create admin (development only)
+POST   /admin/login             → Admin login
+GET    /admin/check             → Verify admin token
+GET    /admin/fetch/:id         → Get admin by ID
+GET    /admin/fetchUser         → Get all users (Admin only)
+
+
+Products
+
+POST   /admin/product/create     → Create product (with image)
+PUT    /admin/product/:id        → Edit product (with optional image)
+DELETE /admin/product/delete/:id → Delete product
+GET    /admin/product/fetchalladmin → Fetch all products (Admin only)
+
+
+Orders
+
+GET /admin/orders/all → Fetch all orders
+
+🟢 User APIs
+
+Authentication
+
+POST /user/register     → Register new user
+POST /user/login        → Login
+GET  /user/check-auth   → Check authentication
+GET  /user/logout       → Logout
+
+
+Products
+
+GET /user/products/            → Fetch all products
+GET /user/products/discounted  → Fetch discounted products
+GET /user/products/new         → Fetch new products
+GET /user/products/sort        → Sort products by price
+GET /user/products/image/:id   → Fetch product image
+
+
+Cart
+
+GET    /user/cart/           → Fetch cart items
+POST   /user/cart/add/:id    → Add product to cart
+DELETE /user/cart/delete/:id → Remove product from cart
+
+
+Wishlist
+
+GET    /user/wishlist/           → Fetch wishlist items
+POST   /user/wishlist/add/:id    → Add product to wishlist
+DELETE /user/wishlist/delete/:id → Remove product from wishlist
+
+
+Orders
+
+GET /user/orders/       → Fetch user orders
+GET /user/orders/create → Create new order
+
+🔑 How to Run Locally
+
+1. Clone the repo:
+git clone https://github.com/Dev-Anand-007/Derch.git
+
+2. Navigate to the backend folder:
+cd Derch/backend
+
+3. Install dependencies:
 npm install
-# Derch E-Commerce Backend - API Endpoints
 
-## Admin Routes
+4. Create a `.env` file with required environment variables:
 
-| Method | Endpoint                  | Description                                      | Access       |
-|--------|---------------------------|--------------------------------------------------|-------------|
-| GET    | `/admin/`                 | Admin dashboard                                  | Admin       |
-| POST   | `/admin/create`            | Create new admin (development only)             | Dev Only    |
-| POST   | `/admin/login`             | Admin login                                     | Public      |
-| GET    | `/admin/check`             | Verify admin token                               | Admin       |
-| GET    | `/admin/fetch/:id`         | Fetch admin by ID                                | Admin       |
-| GET    | `/admin/fetchUser`         | Fetch all users                                  | Admin       |
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/derch_db   # Example: local MongoDB instance
+JWT_SECRET=abcd
 
-### Admin Product Management
+5. Start the server in development mode (Windows PowerShell / VS Code):
 
-| Method | Endpoint                        | Description                                | Access |
-|--------|---------------------------------|--------------------------------------------|--------|
-| POST   | `/admin/product/create`          | Create new product (image upload)          | Admin  |
-| PUT    | `/admin/product/:id`             | Edit product (image upload)                | Admin  |
-| DELETE | `/admin/product/delete/:id`      | Delete product by ID                        | Admin  |
-| GET    | `/admin/product/fetchalladmin`   | Fetch all products (Admin view)            | Admin  |
+$env:DEBUG="development:*"; npx nodemon app.js
 
-### Admin Orders
+✅ What this does:
+- $env:DEBUG="development:*" → Enables debug logging for development modules. Any logger that uses the debug package with development:* namespace will print to console.
+- npx nodemon app.js → Starts your Node.js app and automatically restarts it on file changes, making development faster.
 
-| Method | Endpoint          | Description                   | Access |
-|--------|-----------------|-------------------------------|--------|
-| GET    | `/admin/orders/all` | Fetch all orders (Admin only) | Admin  |
+6. Test APIs using Postman or your frontend app.
 
----
-
-## User Routes
-
-| Method | Endpoint             | Description                         | Access       |
-|--------|--------------------|-------------------------------------|-------------|
-| POST   | `/user/register`     | User registration                   | Public      |
-| POST   | `/user/login`        | User login                           | Public      |
-| GET    | `/user/check-auth`   | Verify user authentication           | User        |
-| GET    | `/user/logout`       | User logout (token handled by frontend) | User    |
-
-### User Product Routes
-
-| Method | Endpoint                      | Description                       | Access |
-|--------|-------------------------------|-----------------------------------|--------|
-| GET    | `/user/products/`             | Fetch all products                 | User   |
-| GET    | `/user/products/discounted`   | Fetch discounted products          | User   |
-| GET    | `/user/products/new`           | Fetch new products                 | User   |
-| GET    | `/user/products/sort`          | Sort products by price             | User   |
-| GET    | `/user/products/image/:id`     | Fetch product image                | User   |
-
-### Cart Routes (User)
-
-| Method | Endpoint               | Description                 | Access |
-|--------|----------------------|-----------------------------|--------|
-| GET    | `/user/cart/`         | Fetch user cart items       | User   |
-| POST   | `/user/cart/add/:id`  | Add product to cart         | User   |
-| DELETE | `/user/cart/delete/:id` | Delete product from cart    | User   |
-
-### Wishlist Routes (User)
-
-| Method | Endpoint                 | Description                | Access |
-|--------|--------------------------|----------------------------|--------|
-| GET    | `/user/wishlist/`        | Fetch user wishlist        | User   |
-| POST   | `/user/wishlist/add/:id` | Add product to wishlist    | User   |
-| DELETE | `/user/wishlist/delete/:id` | Remove product from wishlist | User |
-
-### Order Routes (User)
-
-| Method | Endpoint                | Description                  | Access |
-|--------|-------------------------|------------------------------|--------|
-| GET    | `/user/orders/`         | Fetch user orders            | User   |
-| GET    | `/user/orders/create`   | Create new order             | User   |
